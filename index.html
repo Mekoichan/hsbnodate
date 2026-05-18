@@ -1,0 +1,990 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, maximum-scale=1.0, minimum-scale=1.0, viewport-fit=cover">
+  <title>长谷部的520大作战</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      user-select: none;
+      -webkit-tap-highlight-color: transparent;
+      font-family: "PingFang SC", "Microsoft YaHei", "SimHei", "Hiragino Sans GB", "WenQuanYi Micro Hei", sans-serif;
+    }
+    #start-screen {
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background: #2e1e0e url('background.jpg') center/cover;
+  z-index: 100;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  color: #f0e2ce;
+  text-align: center;
+  font-family: "Hiragino Mincho Pro", "SimSun", serif;
+  transition: opacity 0.6s;
+}
+.start-content {
+  background: rgba(0,0,0,0.5);
+  padding: 30px 20px;
+  border-radius: 20px;
+  max-width: 85%;
+}
+#start-screen h1 {
+  font-size: 28px;
+  margin-bottom: 15px;
+  letter-spacing: 4px;
+  color: #dbb876;
+}
+.story {
+  font-size: 16px;
+  line-height: 1.8;
+  margin-bottom: 20px;
+}
+.instructions {
+  text-align: left;
+  font-size: 14px;
+  line-height: 1.8;
+  margin-bottom: 25px;
+  background: rgba(255,250,240,0.1);
+  padding: 10px 15px;
+  border-radius: 10px;
+}
+#btn-start-game {
+  background: #b88a5e;
+  color: white;
+  border: none;
+  padding: 12px 40px;
+  font-size: 20px;
+  border-radius: 30px;
+  letter-spacing: 3px;
+  box-shadow: 0 4px 0 #5a3e2b;
+  cursor: pointer;
+  transition: 0.2s;
+}
+#btn-start-game:active {
+  transform: translateY(2px);
+  box-shadow: 0 2px 0 #5a3e2b;
+}
+    body {
+      background: #1a0e04;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      padding: 10px;
+    }
+    #game-container {
+      width: 100%;
+      max-width: 400px;
+      height: 90vh;
+      max-height: 800px;
+      background: #d4b68a;
+      border: 5px solid #5a3e2b;
+      border-radius: 15px;
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.6);
+      background-image: url('background.png');
+      background-size: cover;
+      background-position: center;
+    }
+    /* 公务桌面视图 */
+    #desk-view {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+       padding-top: 50px;
+    }
+    #document-area {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 15px;
+      overflow: hidden;
+    }
+    .doc-card {
+      width: 90%;
+      background: rgba(255, 250, 240, 0.92);
+      border: 1px solid #8b6b4a;
+      padding: 14px;
+      margin-bottom: 10px;
+      border-radius: 5px;
+      box-shadow: 2px 2px 8px rgba(0,0,0,0.3);
+      font-size: 15px;
+      line-height: 1.5;
+      color: #2e1e0e;
+    }
+    .doc-card strong {
+      color: #7a4a1f;
+    }
+    #work-buttons {
+      display: flex;
+      gap: 15px;
+      margin: 10px 0;
+      justify-content: center;
+    }
+    .work-btn {
+      padding: 12px 28px;
+      font-size: 18px;
+      font-weight: bold;
+      border: none;
+      border-radius: 8px;
+      background: #e6d2b5;
+      color: #3e2b1a;
+      box-shadow: 0 3px 0 #8b6b4a;
+      cursor: pointer;
+      letter-spacing: 1px;
+      transition: 0.1s;
+    }
+    .work-btn:active {
+      transform: translateY(2px);
+      box-shadow: 0 1px 0 #8b6b4a;
+    }
+    #btn-approve { background: #c8e0c8; }
+    #btn-reject { background: #e0c8c8; }
+
+   #status-bar {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: 60;               /* 高于其他层 */
+  background: rgba(220, 200, 160, 0.92);
+  padding: 6px 10px;
+  display: flex;
+  justify-content: space-around;
+  font-weight: bold;
+  font-size: 13px;
+  color: #2e1e0e;
+  border-bottom: 2px solid #8b6b4a;
+   height: 40px;
+}
+    #btn-make-gift {
+      margin: 8px 15px;
+      padding: 12px;
+      background: #b88a5e;
+      color: white;
+      border: none;
+      border-radius: 25px;
+      font-size: 16px;
+      font-weight: bold;
+      letter-spacing: 2px;
+      cursor: pointer;
+      box-shadow: 0 3px 0 #5a3e2b;
+    }
+    #btn-make-gift:active {
+      transform: translateY(2px);
+      box-shadow: 0 1px 0 #5a3e2b;
+    }
+
+    /* 礼物制作全屏浮层 */
+    #gift-overlay {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 55%;               /* 只占下半屏 */
+  background: rgba(30, 15, 0, 0.95);
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  z-index: 30;
+  border-top-left-radius: 20px;
+  border-top-right-radius: 20px;
+}
+    #gift-overlay.active {
+      display: flex;
+    }
+    #gift-canvas {
+      background: #f5ecd7;
+      border: 3px solid #b89b7b;
+      border-radius: 10px;
+      width: 260px;
+      height: 260px;
+      touch-action: none;
+    }
+    #gift-hint {
+      color: #ccc;
+      margin: 10px;
+      font-size: 14px;
+    }
+    #btn-return-desk {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      background: #c44;
+      color: white;
+      border: none;
+      border-radius: 50%;
+      width: 50px;
+      height: 50px;
+      font-size: 20px;
+      font-weight: bold;
+      cursor: pointer;
+      z-index: 35;
+      box-shadow: 0 0 10px rgba(0,0,0,0.5);
+    }
+
+    /* 角色立绘（审神者） */
+    .character-sprite {
+      position: absolute;
+      width: 160px;
+      height: auto;
+      z-index: 40;
+      cursor: pointer;
+      transition: opacity 0.5s;
+    }
+#saniwa-sprite {
+  position: absolute;
+  top: 15%;                    /* 上半区域 */
+  width: 120px;
+  height: auto;
+  z-index: 35;                 /* 低于状态栏(60)和礼物窗口(30? 需调整) */
+  display: none;
+  left: 0;
+  pointer-events: auto;
+}
+
+
+/* NPC立绘显示区 —— 降低层级，缩小尺寸 */
+#npc-display {
+  position: absolute;
+  top: 10%;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 55;   /* 比对话框低一点，比背景高 */
+  width: 100%;
+  text-align: center;
+  pointer-events: auto;
+  display: none;
+}
+
+#npc-sprite {
+  max-height: 25vh;          /* 限制高度，避免过大 */
+  max-width: 60vw;
+  object-fit: contain;
+  display: inline-block;
+}
+
+/* 对话窗口 —— 提高层级，确保在最上面 */
+.dialogue-popup {
+  position: absolute;
+  bottom: 12%;
+  left: 5%;
+  width: 90%;
+  background: rgba(255, 250, 243, 0.95);
+  border: 3px solid #8b6b4a;
+  border-radius: 15px;
+  padding: 15px;
+  z-index: 60;               /* 高于立绘 */
+  text-align: center;
+  display: none;
+}
+.dialogue-popup.active {
+  display: block;
+}
+.dialogue-btn {
+  display: block;
+  margin: 6px auto;
+  padding: 8px 18px;
+  background: #e8d5b7;
+  border: 1px solid #8b6b4a;
+  border-radius: 20px;
+  cursor: pointer;
+}
+    /* 结局 */
+    #ending-screen {
+      position: absolute;
+      top:0; left:0;
+      width:100%; height:100%;
+      background: rgba(0,0,0,0.9);
+      color: #eee;
+      display: none;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      z-index: 100;
+      padding: 20px;
+      text-align: center;
+      font-size: 18px;
+    }
+    #ending-screen.active {
+      display: flex;
+    }
+    #desk-image {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: auto;
+  z-index: 1;                /* 低于公文卡片、按钮等元素 */
+  pointer-events: none;      /* 不阻挡点击 */
+  object-fit: cover;         /* 保持比例覆盖底部 */
+}
+
+  </style>
+</head>
+<body>
+<div id="game-container">
+  <!-- 桌面主视图 -->
+   <!-- 开始页面 -->
+<div id="start-screen">
+  <div class="start-content">
+    <h1>长谷部的520计划</h1>
+    <p class="story">
+      520的夜即将来临，<br>
+      压切长谷部仍在处理堆积的公务。<br>
+      但是……<br>
+      他始终放不下一件事：<br>
+      <strong>还没有给审神者准备礼物。</strong>
+    </p>
+    <div class="instructions">
+      <p>处理文件：区分合理申请与胡闹要求</p>
+      <p>悄悄制作礼物：当圆圈重合时点击</p>
+      <p>当心审神者突然出现，及时收手</p>
+      <p>同僚可能发现你，说服他们</p>
+    </div>
+    <button id="btn-start-game">开始游戏</button>
+  </div>
+</div>
+       <div id="status-bar">
+      <span>⏱️ <span id="timer">03:30</span></span>
+      <span>♥<span id="mood-value">100</span></span>
+      <span>公务 <span id="work-progress">0</span>/20</span>
+      <span>礼物 <span id="gift-progress">0</span>%</span>
+    </div>
+  <div id="desk-view">
+     <div id="npc-display" style="display:none; position:absolute; top:10%; left:50%; transform:translateX(-50%); z-index:50;">
+    <img id="npc-sprite" src="" alt="NPC" style="max-height:40vh; max-width:80%;">
+  </div>
+    <div id="document-area"></div>
+    <div id="work-buttons">
+      <button class="work-btn" id="btn-approve">通过</button>
+      <button class="work-btn" id="btn-reject">拒绝</button>
+    </div>
+    <button id="btn-make-gift">✂ 制作礼物</button>
+
+     <div id="dialogue-popup" class="dialogue-popup"></div>
+     <!--<img id="desk-image" src="desk.png" alt="桌子">-->
+  </div>
+    <img id="saniwa-sprite" class="character-sprite" src="saniwa.png" alt="审神者" title="点击打晕">
+
+  <!-- 礼物制作浮层 -->
+  <div id="gift-overlay">
+    <button id="btn-return-desk">↩️</button>
+    <canvas id="gift-canvas" width="260" height="260"></canvas>
+    <div id="gift-hint">在光圈和绳结对齐时点击</div>
+    <!-- 审神者立绘（礼物界面可见） -->
+    <!-- 刀男对话框 -->
+    
+  </div>
+
+  <!-- 结局画面 -->
+  <div id="ending-screen"></div>
+  <audio id="bgm" loop preload="auto">
+  <source src="bgm.mp3" type="audio/mpeg">
+</audio>
+</div>
+
+<script>
+  (function() {
+    // ---------- 游戏核心状态 ----------
+    const GAME_TIME = 120;
+    let timeLeft = GAME_TIME;
+    let workDone = 0;
+    const WORK_TARGET = 20;
+    let giftProgress = 0;
+    let mood = 100;
+    let gameActive = false;
+    let gameEnded = false;
+
+    // 文件队列
+    let documents = [];
+    let currentDoc = null;
+
+    // 礼物小游戏状态
+    let giftActive = false;
+    let knotPos = { x: 130, y: 130 }; // 绳结中心
+    let ringRadius = 60;
+    let ringShrinkSpeed = 0.8;
+    let ringCurrent = ringRadius;
+    let ringDirection = -1; // 收缩
+    let hitWindow = 15; // 点击判定范围
+    let gameLoopId = null;
+
+    // 审神者出现
+    // 审神者移动动画相关
+let saniwaAnimFrame = null;
+let saniwaMoving = false;
+let saniwaCurrentLeft = 0;
+let saniwaTargetLeft = 0;
+let saniwaStartLeft = 0;
+const SANIWA_SPEED = 1; // 每帧移动像素
+const SANIWA_WIDTH = 120; // 立绘宽度，需与CSS一致
+
+    // 刀男抓包
+    let dialogueActive = false;
+    let currentCharacter = null;
+
+    // 打晕计数
+    let knockCount = { saniwa: 0, tsurumaru: 0, chougi: 0 };
+    let knockedOut = { saniwa: false, tsurumaru: false, chougi: false };
+
+    // DOM
+    const docArea = document.getElementById('document-area');
+    const btnApprove = document.getElementById('btn-approve');
+    const btnReject = document.getElementById('btn-reject');
+    const btnMakeGift = document.getElementById('btn-make-gift');
+    const timerEl = document.getElementById('timer');
+    const moodEl = document.getElementById('mood-value');
+    const workProgressEl = document.getElementById('work-progress');
+    const giftProgressEl = document.getElementById('gift-progress');
+    const giftOverlay = document.getElementById('gift-overlay');
+    const giftCanvas = document.getElementById('gift-canvas');
+    const ctx = giftCanvas.getContext('2d');
+    const btnReturnDesk = document.getElementById('btn-return-desk');
+    const saniwaSprite = document.getElementById('saniwa-sprite');
+    const dialoguePopup = document.getElementById('dialogue-popup');
+    const endingScreen = document.getElementById('ending-screen');
+// 获取开始页面元素
+const startScreen = document.getElementById('start-screen');
+const btnStartGame = document.getElementById('btn-start-game');
+// 初始时隐藏游戏功能，但不隐藏整个容器；更好的做法是让游戏循环等到开始后再运行
+let gameStarted = false;
+ 
+
+// 原本的定时器、事件监听等，都放到 startGame 函数里
+function startGame() {
+  if (gameStarted) return;
+  gameStarted = true;
+  gameActive = true;           // 允许游戏核心运转
+ const bgm = document.getElementById('bgm');
+  if (bgm) {
+    bgm.play().catch(e => console.log('BGM 播放被浏览器拦截，再次点击任意处即可'));
+  }
+
+  // 隐藏开始页面
+  startScreen.style.opacity = '0';
+  setTimeout(() => { startScreen.style.display = 'none'; }, 600);
+
+  // 初始化第一份文件
+  if (!currentDoc) nextDocument();
+documents.push(generateDoc(), generateDoc());
+nextDocument();
+updateUI();
+  // 启动计时器
+  timerInterval = setInterval(() => {
+    if (!gameActive) return;
+    timeLeft--;
+    updateUI();
+    checkEndCondition();
+  }, 1000);
+
+  // 启动所有调度
+  scheduleDoc();
+  scheduleSaniwa();
+  scheduleTsurumaru();
+  scheduleChougi();
+
+  // 可选：播放BGM
+  if (bgm && !bgmStarted) {
+    bgm.play().then(() => bgmStarted = true).catch(()=>{});
+  }
+}
+
+btnStartGame.addEventListener('click', startGame);
+    // ---------- 工具函数 ----------
+    function updateUI() {
+      timerEl.textContent = formatTime(timeLeft);
+      moodEl.textContent = mood;
+      workProgressEl.textContent = workDone;
+      giftProgressEl.textContent = giftProgress;
+    }
+    function formatTime(sec) {
+      const m = Math.floor(sec / 60);
+      const s = sec % 60;
+      return `${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`;
+    }
+
+    // ---------- 文件系统 ----------
+    const fileTemplates = [
+      { text: '狐之助 申请购买一整箱油豆腐', correct: 'reject' },
+      { text: '审神者 申请购买一整箱油豆腐', correct: 'approve' },
+      { text: '鹤丸国永 申请在走廊设置陷阱机关', correct: 'reject' },
+      { text: '山姥切长义 请求增加内番班次', correct: 'approve' },
+      { text: '蜻蛉切 提交近期刀装损耗报告', correct: 'approve' },
+      { text: '狮子王 申请举办本丸歌会', correct: 'approve' },
+      { text: '大俱利伽罗 申请单独远征', correct: 'reject' },
+      { text: '烛台切光忠 申请厨房修缮费用', correct: 'approve' },
+      { text: '鹤丸国永 再次申请在屋顶设置蹦极装置', correct: 'reject' },
+      { text: '山姥切国广 申请更换被子', correct: 'approve' },
+      { text: '太郎太刀 申请休假参拜神社', correct: 'approve' },
+      { text: '审神者 申请和鹤丸国永一起挖坑', correct: 'approve' },
+      { text: '南海太郎朝尊 申请购买实验耗材', correct: 'approve' },
+      { text: '巴形薙刀 申请成为近侍', correct: 'reject' },
+      { text: '千子村正 申请举办脱衣艺术展', correct: 'reject' },
+      { text: '鹤丸国永 申请进入大俱利伽罗的房间', correct: 'reject' },
+      { text: '大俱利伽罗 申请将鹤丸国永关在门外', correct: 'reject' },
+      { text: '鹤丸国永 申请往审神者椅子上放图钉', correct: 'reject' },
+      { text: '审神者 申请每月额外发放零花钱', correct: 'approve' },
+      { text: '一期一振 申请为弟弟们举办读书会', correct: 'approve' },
+      { text: '道誉一文字 申请在本丸开设English课程', correct: 'approve' },//20
+      { text: '博多藤四郎 申请退出巧克力大作战', correct: 'reject' }, 
+      { text: '龟甲贞宗 申请研究绳缚艺术用于本丸装饰', correct: 'reject' },
+      { text: '明石国行 申请翘班睡大觉', correct: 'reject' },
+      { text: '陆奥守吉行 申请将本丸刀装全部换成铳兵', correct: 'reject' },
+      { text: '日本号 申请购入大量酒水', correct: 'reject' },//25
+      { text: '大包平 申请挑战天下五剑', correct: 'reject' },
+      { text: '日光一文字 申请内番种植葡萄', correct: 'approve' },
+      { text: '笑面青江 申请获取一个金刀装', correct: 'approve' },
+      { text: '审神者 申请翘班睡大觉', correct: 'approve' }
+    ];
+
+    function generateDoc() {
+      const t = fileTemplates[Math.floor(Math.random() * fileTemplates.length)];
+      return { ...t };
+    }
+
+    function nextDocument() {
+      if (!gameActive) return;
+      if (documents.length === 0) {
+        documents.push(generateDoc());
+      }
+      currentDoc = documents.shift();
+      renderCurrentDoc();
+      // 自动补充待办
+      if (documents.length < 2) {
+        documents.push(generateDoc());
+      }
+    }
+
+    function renderCurrentDoc() {
+      docArea.innerHTML = '';
+      if (!currentDoc) return;
+      const div = document.createElement('div');
+      div.className = 'doc-card';
+      div.innerHTML = `<strong>📜 ${currentDoc.text}</strong>`;
+      docArea.appendChild(div);
+    }
+
+    function processDocument(action) {
+      if (!gameActive || !currentDoc) return;
+      if (currentDoc.correct === action) {
+        workDone = Math.min(workDone + 1, WORK_TARGET);
+      } else {
+        workDone = Math.max(0, workDone - 1);
+        showToast('处理错误，公务-1');
+      }
+      nextDocument();
+      updateUI();
+      checkEndCondition();
+    }
+
+    // ---------- 礼物小游戏（绳结节奏） ----------
+    function startGiftGame() {
+      giftActive = true;
+      ringCurrent = ringRadius;
+      ringDirection = -1;
+      drawGift();
+      if (gameLoopId) cancelAnimationFrame(gameLoopId);
+      gameLoop();
+    }
+
+    function stopGiftGame() {
+      giftActive = false;
+      if (gameLoopId) cancelAnimationFrame(gameLoopId);
+    }
+
+    function gameLoop() {
+      if (!giftActive) return;
+      ringCurrent += ringDirection * ringShrinkSpeed;
+      if (ringCurrent <= 5) {
+        ringDirection = 1; // 开始扩大
+      } else if (ringCurrent >= ringRadius) {
+        ringDirection = -1;
+      }
+      drawGift();
+      gameLoopId = requestAnimationFrame(gameLoop);
+    }
+
+    function drawGift() {
+      ctx.clearRect(0, 0, 260, 260);
+      // 画绳结
+      ctx.beginPath();
+      ctx.arc(knotPos.x, knotPos.y, 20, 0, 2*Math.PI);
+      ctx.fillStyle = '#8b5a3c';
+      ctx.fill();
+      ctx.strokeStyle = '#4a2c1a';
+      ctx.lineWidth = 2;
+      ctx.stroke();
+      // 画收缩光圈
+      ctx.beginPath();
+      ctx.arc(knotPos.x, knotPos.y, ringCurrent, 0, 2*Math.PI);
+      ctx.strokeStyle = ringCurrent < hitWindow ? '#f66' : '#6b8c5c';
+      ctx.lineWidth = 3;
+      ctx.stroke();
+      // 提示区域
+      if (ringCurrent < hitWindow + 5 && ringCurrent > hitWindow - 5) {
+        ctx.fillStyle = '#ffffff80';
+        ctx.beginPath();
+        ctx.arc(knotPos.x, knotPos.y, ringCurrent, 0, 2*Math.PI);
+        ctx.fill();
+      }
+    }
+
+    function handleGiftClick(e) {
+      if (!giftActive || dialogueActive) return;
+      e.preventDefault();
+      const rect = giftCanvas.getBoundingClientRect();
+      const scaleX = giftCanvas.width / rect.width;
+      const scaleY = giftCanvas.height / rect.height;
+      const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+      const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+      const mx = (clientX - rect.left) * scaleX;
+      const my = (clientY - rect.top) * scaleY;
+      const dist = Math.hypot(mx - knotPos.x, my - knotPos.y);
+      // 判定点击是否在光圈范围内
+      if (Math.abs(dist - ringCurrent) < 10) {
+        giftProgress = Math.min(100, giftProgress + 3);
+        updateUI();
+        // 重置光圈
+        ringCurrent = ringRadius;
+        ringDirection = -1;
+        drawGift();
+        if (giftProgress >= 100) {
+          stopGiftGame();
+          showToast('礼物完成了！');
+        }
+      } else {
+        // 失误，轻微惩罚
+        ringCurrent = ringRadius;
+        ringDirection = -1;
+        drawGift();
+      }
+    }
+
+    // ---------- 审神者出现（无预警）----------
+function showSaniwa() {
+  if (!gameActive || knockedOut.saniwa || saniwaMoving) return;
+  // 只在礼物界面打开时出现
+  if (!giftOverlay.classList.contains('active')) return;
+
+  const containerWidth = document.getElementById('game-container').offsetWidth;
+  const centerX = (containerWidth / 2) - (SANIWA_WIDTH / 2);
+
+  // 随机从左或右出现
+  const fromLeft = Math.random() < 0.5;
+  saniwaCurrentLeft = fromLeft ? -SANIWA_WIDTH : containerWidth + SANIWA_WIDTH;
+  saniwaTargetLeft = centerX;
+
+  saniwaSprite.style.left = saniwaCurrentLeft + 'px';
+  saniwaSprite.style.display = 'block';
+  saniwaMoving = true;
+
+  function animate() {
+    if (!saniwaMoving) return;
+
+    // 到达目标附近（允许1px误差）
+    if (Math.abs(saniwaCurrentLeft - saniwaTargetLeft) <= SANIWA_SPEED) {
+      saniwaCurrentLeft = saniwaTargetLeft;
+      saniwaSprite.style.left = saniwaCurrentLeft + 'px';
+      // 如果礼物界面还开着，触发惩罚
+      if (giftOverlay.classList.contains('active')) {
+        catchBySaniwa();
+      }
+      hideSaniwa();
+      return;
+    }
+
+    // 向中央移动
+    if (saniwaCurrentLeft < saniwaTargetLeft) {
+      saniwaCurrentLeft += SANIWA_SPEED;
+    } else {
+      saniwaCurrentLeft -= SANIWA_SPEED;
+    }
+    saniwaSprite.style.left = saniwaCurrentLeft + 'px';
+    saniwaAnimFrame = requestAnimationFrame(animate);
+  }
+
+  saniwaAnimFrame = requestAnimationFrame(animate);
+}
+
+    function hideSaniwa() {
+  saniwaMoving = false;
+  if (saniwaAnimFrame) {
+    cancelAnimationFrame(saniwaAnimFrame);
+    saniwaAnimFrame = null;
+  }
+  saniwaSprite.style.display = 'none';
+}
+
+    function catchBySaniwa() {
+      if (!gameActive || knockedOut.saniwa) return;
+      mood = Math.max(0, mood - 15);
+      giftProgress = Math.max(0, giftProgress - Math.floor(Math.random()*11+5));
+      workDone = Math.max(0, workDone - Math.floor(Math.random()*3+1));
+      updateUI();
+      showToast('被主上发现了！心情-15，进度减少');
+      hideSaniwa();
+    }
+
+function returnToDesk() {
+  const wasMoving = saniwaMoving; // 先保存状态
+  giftOverlay.classList.remove('active');
+  hideSaniwa();
+  hideDialogue();
+  stopGiftGame();
+  if (wasMoving && Math.random() < 0.3) {
+    mood = Math.min(150, mood + 2);
+    updateUI();
+  }
+}
+
+    // ---------- 刀男抓包对话 ----------
+function showDialogue(character) {
+  if (!gameActive || dialogueActive || knockedOut[character]) return;
+  
+  // 自动关闭礼物界面（如果打开）
+  if (giftOverlay.classList.contains('active')) {
+    returnToDesk(); // 关闭礼物浮层并停止小游戏
+  }
+  
+  dialogueActive = true;
+  currentCharacter = character;
+  
+  // 显示NPC立绘（上半屏）
+  const npcDisplay = document.getElementById('npc-display');
+  const npcSprite = document.getElementById('npc-sprite');
+  npcDisplay.style.display = 'block';
+  npcSprite.src = (character === 'tsurumaru') ? 'tsurumaru.png' : 'chougi.png';
+  npcSprite.alt = (character === 'tsurumaru') ? '鹤丸国永' : '山姥切长义';
+  npcSprite.onerror = function() {
+    this.style.display = 'none'; // 图片加载失败则隐藏
+  };
+  
+  // 显示对话窗口（下半屏）
+  dialoguePopup.classList.add('active');
+  let html = '';
+  if (character === 'tsurumaru') {
+    html = `
+      <p><strong>鹤丸国永</strong>：哎呀，在做什么呢长谷部君。</p>
+      <button class="dialogue-btn" data-action="help">过来帮忙，这是为了主人。</button>
+      <button class="dialogue-btn" data-action="surprise">！？别吓我……总之记得保密。</button>
+      <button class="dialogue-btn" data-action="main">这……也算主命的一环。</button>
+      <button class="dialogue-btn" data-action="goaway">走开，别来烦我。</button>
+    `;
+} else if (character === 'chougi') {
+    html = `
+      <p><strong>山姥切长义</strong>：你在做什么，压切？</p>
+      <button class="dialogue-btn" data-action="beg">求你了，就当没看见……</button>
+      <button class="dialogue-btn" data-action="report">别碍事。</button>
+      <button class="dialogue-btn" data-action="report">与你无关。</button>
+      <button class="dialogue-btn" data-action="report">这是为了主人。</button>
+    `;
+}
+  dialoguePopup.innerHTML = html;
+  
+  // 绑定选项事件
+  dialoguePopup.querySelectorAll('.dialogue-btn').forEach(btn => {
+    btn.addEventListener('click', (e) => resolveDialogue(character, e.target.dataset.action));
+  });
+  
+  // 允许点击立绘打晕（需要pointer-events:auto）
+  npcDisplay.style.pointerEvents = 'auto';
+  npcSprite.addEventListener('click', function knockHandler(e) {
+    e.stopPropagation();
+    handleKnock(character);
+    // 如果被打晕，立绘会随之隐藏（在handleKnock里调用hideDialogue）
+  });
+}
+
+function hideDialogue() {
+  dialogueActive = false;
+  dialoguePopup.classList.remove('active');
+  document.getElementById('npc-display').style.display = 'none';
+  currentCharacter = null;
+}
+
+    function resolveDialogue(character, action) {
+      if (character === 'tsurumaru') {
+        if (action === 'goaway') {
+          workDone = Math.max(0, workDone - 3);
+          updateUI();
+          showToast('鹤丸偷走了文件！公务-3');
+        } else {
+          const r = Math.random();
+          if (action === 'help') {
+            if (r < 0.33) showToast('鹤丸帮忙引开了主人，谢谢鹤丸');
+            else if (r < 0.66) { workDone = Math.min(WORK_TARGET, workDone + 3); showToast('公务+3'); }
+            else { giftProgress = Math.min(100, giftProgress + 15); showToast('礼物+15'); }
+          } else if (action === 'surprise') {
+            giftProgress = Math.min(100, giftProgress + Math.floor(Math.random()*11+10));
+            showToast('礼物进度增加');
+          } else if (action === 'main') {
+            workDone = Math.min(WORK_TARGET, workDone + 5);
+            showToast('公务+5');
+          }
+          updateUI();
+        }
+      } else if (character === 'chougi') {
+        if (action === 'beg') {
+          workDone = Math.min(WORK_TARGET, workDone + 2);
+          showToast('长义帮忙处理了公务，+2');
+          updateUI();
+        } else {
+          // 告发，立刻抓包
+          hideDialogue();
+          showToast('长义告发！全部暴露！');
+          catchBySaniwa();
+        }
+      }
+      hideDialogue();
+    }
+
+    // ---------- 打晕彩蛋 ----------
+    function handleKnock(character) {
+      if (!gameActive || knockedOut[character]) return;
+      knockCount[character]++;
+      if (knockCount[character] >= 5) {
+        knockedOut[character] = true;
+        if (character === 'saniwa') {
+          if (knockedOut.tsurumaru && knockedOut.chougi) {
+            triggerKidnapEnding();
+          } else {
+            mood = Math.max(0, mood - 50);
+            updateUI();
+            knockCount.saniwa = 0;
+            knockedOut.saniwa = false;
+            hideSaniwa();
+            showToast('被其他刀男发现！心情-50');
+          }
+        } else {
+          hideDialogue();
+          showToast(`${character === 'tsurumaru' ? '鹤丸' : '长义'} 被打晕了…`);
+        }
+      }
+    }
+
+    // 点击审神者立绘
+    saniwaSprite.addEventListener('click', (e) => {
+      e.stopPropagation();
+      handleKnock('saniwa');
+    });
+
+    function triggerKidnapEnding() {
+      gameActive = false;
+      gameEnded = true;
+      giftOverlay.classList.remove('active');
+      endingScreen.classList.add('active');
+      endingScreen.innerHTML = `<h2 style="color:#c44;">无人知晓的结局</h2><p>能阻拦你的人都消失了……</p><p>你将昏迷的审神者轻轻抱起，<br>走向本丸深处。</p><p style="color:#ccc;">“主……我们要永远在一起。”</p>`;
+      clearAllTimers();
+    }
+
+    function showToast(msg) {
+      const toast = document.createElement('div');
+      toast.style.position = 'absolute'; toast.style.bottom = '20%'; toast.style.left = '50%';
+      toast.style.transform = 'translateX(-50%)'; toast.style.background = '#222';
+      toast.style.color = '#fff'; toast.style.padding = '8px 18px'; toast.style.borderRadius = '20px';
+      toast.style.zIndex = '200'; toast.textContent = msg;
+      document.getElementById('game-container').appendChild(toast);
+      setTimeout(() => toast.remove(), 1800);
+    }
+
+    // ---------- 定时事件 ----------
+    let docTimer, saniwaSchedule, tsurumaruSchedule, chougiSchedule;
+    function clearAllTimers() {
+      clearTimeout(docTimer); clearTimeout(saniwaSchedule);
+      clearTimeout(tsurumaruSchedule); clearTimeout(chougiSchedule);
+    }
+
+    function scheduleDoc() {
+      if (!gameActive || !gameStarted) return;
+      docTimer = setTimeout(() => {
+        if (documents.length < 4) documents.push(generateDoc());
+        if (!currentDoc) nextDocument();
+        scheduleDoc();
+      }, 5000);
+    }
+
+    function scheduleSaniwa() {
+      if (!gameActive) return;
+      const delay = 10000 + Math.random() * 15000; // 10~25秒
+      saniwaSchedule = setTimeout(() => {
+        if (giftOverlay.classList.contains('active') && !knockedOut.saniwa) showSaniwa();
+        scheduleSaniwa();
+      }, delay);
+    }
+
+    function scheduleTsurumaru() {
+      if (!gameActive) return;
+      const delay = 8000 + Math.random() * 12000;
+      tsurumaruSchedule = setTimeout(() => {
+        if (giftOverlay.classList.contains('active') && !dialogueActive && !knockedOut.tsurumaru) showDialogue('tsurumaru');
+        scheduleTsurumaru();
+      }, delay);
+    }
+
+    function scheduleChougi() {
+      if (!gameActive) return;
+      const delay = 8000 + Math.random() * 12000;
+      chougiSchedule = setTimeout(() => {
+        if (giftOverlay.classList.contains('active') && !dialogueActive && !knockedOut.chougi) showDialogue('chougi');
+        scheduleChougi();
+      }, delay);
+    }
+
+    function checkEndCondition() {
+      if (timeLeft <= 0) {
+        if (workDone < WORK_TARGET) {
+          endGame('fail', `<h2>大失败……公务未完成</h2><p>可怜的长谷部没能等到约会……<br>而是等来了加班一整晚。</p>`);
+        } else {
+          let finalMood = mood + giftProgress;
+          let msg = '';
+          if (finalMood >= 150) msg = `<h2>完美结局</h2><p>做出了绝赞的礼物！<br>主人超开心于是<br>收获了寝当番！</p>`;
+          else if (finalMood >= 125) msg = `<h2>好结局</h2><p>主人开心地收下了礼物。</p>`;
+          else if (finalMood >= 50) msg = `<h2>普通结局</h2><p>“你不用这样勉强自己。”<br>主人很委婉地暗示<br>并且拒绝了礼物。</p>`;
+          else msg = `<h2>坏结局</h2><p>审神者表情复杂。<br>她似乎在考虑新的近侍人选。</p>`;
+          endGame('success', msg);
+        }
+      }
+    }
+
+    function endGame(type, msg) {
+      gameActive = false; gameEnded = true;
+      giftOverlay.classList.remove('active');
+      endingScreen.classList.add('active');
+      endingScreen.innerHTML = msg;
+      clearAllTimers();
+      stopGiftGame();
+      if (bgm) bgm.pause();
+    }
+
+    // 主计时器
+
+
+    // ---------- 事件绑定 ----------
+    btnApprove.addEventListener('click', () => processDocument('approve'));
+    btnReject.addEventListener('click', () => processDocument('reject'));
+    btnMakeGift.addEventListener('click', () => {
+      giftOverlay.classList.add('active');
+      startGiftGame();
+    });
+    btnReturnDesk.addEventListener('click', returnToDesk);
+    giftCanvas.addEventListener('click', handleGiftClick);
+    giftCanvas.addEventListener('touchstart', (e) => { e.preventDefault(); handleGiftClick(e); });
+
+    
+  })();
+</script>
+</body>
+</html>
