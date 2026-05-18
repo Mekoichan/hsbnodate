@@ -843,9 +843,10 @@ function hideDialogue() {
           updateUI();
         } else {
           // 告发，立刻抓包
-          hideDialogue();
-          showToast('长义告发！全部暴露！');
+          hideDialogue(); 
           catchBySaniwa();
+          showToast('长义告发！全部暴露！心情-15');
+         
         }
       }
       hideDialogue();
