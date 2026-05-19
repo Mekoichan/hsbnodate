@@ -340,7 +340,7 @@
    <!-- 开始页面 -->
 <div id="start-screen">
   <div class="start-content">
-    <h1>长谷部的520计划</h1>
+    <h1>压切长谷部的520大作战</h1>
     <p class="story">
       520的夜即将来临，<br>
       压切长谷部仍在处理堆积的公务。<br>
@@ -349,10 +349,14 @@
       <strong>还没有给审神者准备礼物。</strong>
     </p>
     <div class="instructions">
-      <p>处理文件：区分合理申请与胡闹要求</p>
-      <p>悄悄制作礼物：当圆圈重合时点击</p>
+      <p>请区分合理申请与胡闹要求</p>
+      <p>（公务不完成会被强制加班哦……）</p>
+      <p>当圆圈重合时点击以制作礼物</p>
+       <p>（礼物好坏都没关系心意最重要！）</p>
       <p>当心审神者突然出现，及时收手</p>
+      <p>（主人出现的时候要专心工作！）</p>
       <p>同僚可能发现你，说服他们</p>
+      <p>（帮你还是害你都取决于你的态度。）</p>
     </div>
     <button id="btn-start-game">开始游戏</button>
   </div>
@@ -492,8 +496,7 @@ updateUI();
 
   // 启动所有调度
   scheduleDoc();
-  scheduleSaniwa();
-  scheduleTsurumaru();
+  scheduleSwords();
   scheduleChougi();
 
   // 可选：播放BGM
@@ -919,30 +922,35 @@ function hideDialogue() {
 
     function scheduleSaniwa() {
       if (!gameActive) return;
-      const delay = 10000 + Math.random() * 15000; // 10~25秒
+      const delay = 8000 + Math.random() * 12000; // 10~25秒
       saniwaSchedule = setTimeout(() => {
         if (giftOverlay.classList.contains('active') && !knockedOut.saniwa) showSaniwa();
         scheduleSaniwa();
       }, delay);
     }
 
-    function scheduleTsurumaru() {
-      if (!gameActive) return;
-      const delay = 8000 + Math.random() * 12000;
-      tsurumaruSchedule = setTimeout(() => {
-        if (giftOverlay.classList.contains('active') && !dialogueActive && !knockedOut.tsurumaru) showDialogue('tsurumaru');
-        scheduleTsurumaru();
-      }, delay);
+        function scheduleSwords() {
+  if (!gameActive || gameEnded) return;
+  const delay = 15000 + Math.random() * 15000; // 8~20秒，你可调节频率
+  setTimeout(() => {
+    // 只在礼物界面、无对话、无审神者移动、且角色未被打晕时触发
+    if (!giftOverlay.classList.contains('active') || dialogueActive || saniwaMoving) {
+      scheduleSwords();
+      return;
     }
-
-    function scheduleChougi() {
-      if (!gameActive) return;
-      const delay = 8000 + Math.random() * 12000;
-      chougiSchedule = setTimeout(() => {
-        if (giftOverlay.classList.contains('active') && !dialogueActive && !knockedOut.chougi) showDialogue('chougi');
-        scheduleChougi();
-      }, delay);
+    // 随机选择鹤丸或长义（只要没被打晕）
+    const candidates = [];
+    if (!knockedOut.tsurumaru) candidates.push('tsurumaru');
+    if (!knockedOut.chougi) candidates.push('chougi');
+    if (candidates.length === 0) {
+      scheduleSwords();
+      return;
     }
+    const chosen = candidates[Math.floor(Math.random() * candidates.length)];
+    showDialogue(chosen);
+    scheduleSwords();  // 递归，继续下一次
+  }, delay);
+}
 
     function checkEndCondition() {
       if (timeLeft <= 0) {
