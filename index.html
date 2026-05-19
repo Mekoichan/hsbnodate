@@ -350,13 +350,13 @@
     </p>
     <div class="instructions">
       <p>请区分合理申请与胡闹要求</p>
-      <p>（公务不完成会被强制加班哦……）</p>
+      <p>（公务不完成会被强制加班）</p>
       <p>当圆圈重合时点击以制作礼物</p>
-       <p>（礼物好坏都没关系心意最重要！）</p>
+       <p>（礼物好坏都没关系心意最重要）</p>
       <p>当心审神者突然出现，及时收手</p>
-      <p>（主人出现的时候要专心工作！）</p>
+      <p>（主人出现的时候要专心工作）</p>
       <p>同僚可能发现你，说服他们</p>
-      <p>（帮你还是害你都取决于你的态度。）</p>
+      <p>（帮你还是害你取决于你的态度）</p>
     </div>
     <button id="btn-start-game">开始游戏</button>
   </div>
@@ -497,7 +497,7 @@ updateUI();
   // 启动所有调度
   scheduleDoc();
   scheduleSwords();
-  scheduleChougi();
+  scheduleSaniwa();
 
   // 可选：播放BGM
   if (bgm && !bgmStarted) {
@@ -657,7 +657,7 @@ btnStartGame.addEventListener('click', startGame);
       const my = (clientY - rect.top) * scaleY;
       const dist = Math.hypot(mx - knotPos.x, my - knotPos.y);
       // 判定点击是否在光圈范围内
-      if (Math.abs(dist - ringCurrent) < 10) {
+      if (Math.abs(dist - ringCurrent) < 15) {
         giftProgress = Math.min(100, giftProgress + 3);
         updateUI();
         // 重置光圈
